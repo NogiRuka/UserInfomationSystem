@@ -1,0 +1,184 @@
+﻿
+@{
+    ViewBag.Title = "Login";
+}
+
+    <style type="text/css">
+        body {
+            background-image: url(/Images/lg-bg.png);
+            background-position: 14px 14px;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+        }
+
+        .layui-input {
+            height: 45px;
+            width: 87%;
+            padding-left: 5px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        .layui-btn {
+            height: 45px;
+            margin-left: 197px;
+        }
+
+        .captcha-input {
+            height: 45px;
+            padding-left: 5px;
+            font-size: 16px;
+        }
+
+        .layui-form {
+            width: 30%;
+            height: 60%;
+            margin: 0 auto;
+            margin-top: 10%;
+            padding: 15px 28px 0px;
+            background: #fff;
+            opacity: 80%;
+            border-radius: 2%;
+        }
+
+        .layui-input-block {
+            margin-left: 0;
+        }
+
+
+
+            .layui-input-block a {
+                color: blue;
+                float: right;
+                line-height: 30px;
+                font-size: 14px;
+            }
+
+        h1 {
+            text-align: center;
+            color: #1d598e;
+        }
+
+        input.text {
+            text-align: center;
+            padding: 10px 20px;
+            width: 300px;
+        }
+
+        #canvas {
+            float: right;
+            margin-right: 4%;
+            display: inline-block;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .code {
+            width: 400px;
+            margin: 0 auto;
+        }
+
+        .input-val {
+            width: 60%;
+            height: 45px;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid rgba(0, 0, 0, .2);
+        }
+
+        .decrib {
+            font-size: 16px;
+        }
+    </style>
+
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <h1>用&nbsp;户&nbsp;登&nbsp;录</h1>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <span class="decrib">账号：</span>
+                <input type="text" id="username" value="admin" autocomplete="off" class="layui-input"
+                       required>
+            </div>
+        </div>
+
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <span class="decrib">密码：</span>
+                <input type="password" id="password" value="admin" autocomplete="off" class="layui-input"
+                       required>
+            </div>
+        </div>
+
+        <br>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-bypercent-left btn" id="btn" type="button">登 录</button>
+            </div>
+        </div>
+        <br>
+        <br>
+    </div>
+
+<script>
+    const Toast = Swal.mixin({
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 1000,
+        timerProgressBar: false,
+        didOpen: (toast) => {
+            toast.addEventListener("mouseenter", Swal.stopTimer);
+            toast.addEventListener("mouseleave", Swal.resumeTimer);
+        },
+    });
+
+    layui.use(['layer', 'form'], function () {
+        var layer = layui.layer;
+        var form = layui.form;
+        $ = layui.jquery;
+        form.on("submit(login)", function (obj) {
+            debugger;
+        })
+    })
+
+    $(function () {
+        $("#btn").click(function () {
+            $.ajax({
+                url: '@Url.Action("CheckUser")',
+                type: 'POST',
+                data: {
+                    'username': $('#username').val(),
+                    'password': $('#password').val(),
+                },
+                dataType: "json",
+                success: function (res) {
+                    if (res.code == 0) {
+                        Toast.fire({
+                            icon: "success",
+                            title: "登录成功"
+                        })
+                        setTimeout(() => {
+                            location.href = "../Form/Index";
+                            //location.href = "../Form/Temp1";
+                        }, 1000)
+                    } else {
+                        Toast.fire({
+                            icon: "error",
+                            title: res.msg
+                        })
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+
+
+

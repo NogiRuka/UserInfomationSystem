@@ -1,0 +1,365 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+@*赫蹏*@
+<link rel="stylesheet" href="//unpkg.com/heti/umd/heti.min.css">
+
+<style>
+    #hitokoto {
+    }
+
+    .onenote {
+        font-family: "Times New Roman",Georgia,Serif;
+        font-size: 20px;
+        transition: all .3s ease;
+    }
+
+    #list {
+        margin-left: 25px;
+    }
+
+    .layui-table-cell {
+        text-align: center;
+        height: auto;
+        white-space: normal;
+    }
+</style>
+<div class="layui-layout layui-layout-admin">
+    <div class="layui-header">
+        <div class="layui-logo layui-hide-xs layui-bg-black">用户管理系统</div>
+        <!-- 头部区域（可配合layui 已有的水平导航） -->
+        <ul class="layui-nav layui-layout-left"></ul>
+        <div class="onenote entry heti">
+            <!-- 请注意，以下的示例包含超链接，您可能需要手动配置样式使其不变色。如果您嫌麻烦，可以移除。 -->
+            <p id="hitokoto" style='left: 226px; top: 17px; position: absolute; font-size: 20px; font-family: " Times New Roman",Georgia,Serif;'>
+                <a href="#" target="_blank" id="hitokoto_text" style="color:white;">:D 获取中...</a>
+                <a style="color:white;">——</a>
+                <a id="from_who" style="color:white;"></a>
+                <a style="color:white;"> 「</a>
+                <a id="from" style="color:white;"></a>
+                <a style="color:white;">」</a>
+            </p>
+
+        </div>
+    </div>
+    <div class="layui-side layui-bg-black">
+        <div class="layui-side-scroll">
+            <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree" lay-filter="test">
+                <li class="layui-nav-item layui-nav-itemed">
+                    <a class="" href="javascript:;">菜单</a>
+                    <dl class="layui-nav-child">
+                        <dd><a href="#userIndex">用户信息</a></dd>
+                        <dd><a href="~/Login/Login">退出系统</a></dd>
+                    </dl>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="layui-body">
+        <div id="list">
+            <!-- 内容主体区域 -->
+            <div id="userIndex">
+                <div class="layui-block" style="padding: 15px 0;">
+                    <div class="layui-inline">
+                        <input class="layui-input" name="condition" id="searchCondition" autocomplete="off"  placeholder="支持姓名，学校，简介"/>
+                    </div>
+                    <button id="searchUser" type="button" class="layui-btn">搜索</button>
+                    <button id="addUser" type="button" class="layui-btn layui-btn-normal">添加用户</button>
+                </div>
+
+                <table class="layui-hide" id="test" lay-filter="test"></table>
+
+                <script type="text/html" id="barDemo">
+                    <a class="layui-btn layui-btn-xs" lay-event="edit">修改</a>
+                    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+                </script>
+
+                <script type="text/html" id="formatTime">
+                    {{# if('id' in d && d.createTime) {  }}
+                    {{layui.util.toDateString(d.createTime, 'yyyy-MM-dd HH:mm:ss')}}
+                    {{# } }}
+                </script>
+
+                <script>
+                    /*
+                    a	动画
+                    b	漫画
+                    c	游戏
+                    d	文学
+                    e	原创
+                    f	来自网络
+                    g	其他
+                    h	影视
+                    i	诗词
+                    j	网易云
+                    k	哲学
+                    l	抖机灵
+                    */
+
+                    fetch('https://v1.hitokoto.cn?c=d&c=i')
+                        .then(response => response.json())
+                        .then(data => {
+                            log(data)
+                            const hitokoto = document.querySelector('#hitokoto_text')
+                            const from_who = document.querySelector('#from_who')
+                            const from = document.querySelector('#from')
+                            hitokoto.href = `https://hitokoto.cn/?uuid=${data.uuid}`
+                            hitokoto.innerText = data.hitokoto
+                            from_who.innerText = data.from_who
+                            from.innerText = data.from
+                        })
+                        .catch(console.error)
+
+                    const Toast = Swal.mixin({
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000,
+                        timerProgressBar: false,
+                        didOpen: (toast) => {
+                            toast.addEventListener('mouseenter', Swal.stopTimer)
+                            toast.addEventListener('mouseleave', Swal.resumeTimer)
+                        }
+                    })
+
+                    function dateHandle(jsondate) {
+                        if (jsondate != null) {
+                            var date = new Date(parseInt(jsondate.replace("/Date(", "").replace(")/", ""), 10));
+                            var year = date.getFullYear();
+                            var month = date.getMonth() + 1;
+                            var day = date.getDate();
+                            var hh = date.getHours();
+                            var mm = date.getMinutes();
+                            var ss = date.getSeconds();
+                            return year + "-" + month + "-" + day + " " + hh + ":" + mm + ":" + ss;
+                        }
+                    }
+
+                    layui.use(['table'], function () {
+                        var table = layui.table;
+                        var upload = layui.upload; //上传
+
+                        // 创建渲染实例
+                        table.render({
+                            elem: '#test'
+                            , url: '@Url.Action("getUserList")' // 此处为静态模拟数据，实际使用时需换成真实接口
+                            , height: 'full-150' // 最大高度减去其他容器已占有的高度差
+                            , cellMinWidth: 80
+                            , totalRow: true // 开启合计行
+                            , page: true
+                            , limit: 10
+                            , limits: [5, 10, 15, 20],
+                            cols: [[
+                                { type: 'numbers', title: '序号', width: 80, align: 'center' }
+                                , { field: 'name', width: 80, title: '姓名' }
+                                , { field: 'age', width: 80, title: '年龄', sort: true }
+                                , { field: 'height', width: 80, title: '身高', sort: true }
+                                , { field: 'weight', width: 80, title: '体重', sort: true }
+                                , { field: 'school', width: 120, title: '毕业学校' }
+                                , {
+                                    field: 'profile', width: 230, title: '个人简介', templet: function (d) {
+                                        return d.profile
+                                    }
+                                }
+                                , {
+                                    field: 'avatar', width: 150, title: '头像', templet: function (d) {
+                                        return "<img src='" + d.avatar + "'/>"
+                                    }
+                                }
+                                , {
+                                    field: 'createTime', title: '创建时间', width: 120, sort: true,
+                                    templet: function (d) { return dateHandle(d.createTime) }
+                                }
+                                , {
+                                    field: 'updateTime', title: '修改时间', width: 120, sort: true,
+                                    templet: function (d) { return dateHandle(d.updateTime) }
+                                }
+                                , { fixed: 'right', title: '操作', width: 135, minWidth: 135, toolbar: '#barDemo' }
+                            ]]
+                            , done: function (res, curr, count) {
+                                //------------------------------------（只是标题，所以不需要循环） --------------------------------------------
+                                //编号列名与操作列的高度 ------> 列名的高度
+                                $(".layui-table-fixed-l .layui-table-header table").height($(".layui-table-header tr").eq(0).height());
+                                $(".layui-table-fixed-r .layui-table-header table").height($(".layui-table-header tr").eq(0).height());
+
+
+                                //  **********************************         每行的（因此需要循环） ***************************************************
+                                //编号列与操作列的高度 ------> 列名的高度
+                                //如果有合并单元格，必须在合并单元格之后，否则有些单元格高度还是不一致
+                                $(".layui-table-main tr").each(function (index, val) { //解决字段值列与 编号列、操作列高度不一致的问题
+                                    // $($(".layui-table-fixed .layui-table-body tbody tr")[index]).height($(val).height());//如果只有1边有固定列，这行就搞定
+                                    //如果有左又有右固定列，那么以下两行都需要
+                                    $($(".layui-table-fixed-l .layui-table-body tbody tr")[index]).height($(val).height());
+                                    $($(".layui-table-fixed-r .layui-table-body tbody tr")[index]).height($(val).height());
+                                });
+
+
+                                var id = this.id;
+                            }
+                            , error: function (res, msg) {
+                                console.log(res, msg)
+                            }
+                        });
+
+                        // 上传
+/*                        upload.render({
+                            elem: '#uploadDemo'
+                            , url: '' //此处配置你自己的上传接口即可
+                            , done: function (res) {
+                                layer.msg('上传成功');
+                                layui.$('#uploadDemoView').removeClass('layui-hide').find('img').attr('src', res.files.file);
+                                console.log(res)
+                            }
+                            , before: function () {
+                                layer.msg('上传中', { icon: 16, time: 0 });
+                            }
+                        });*/
+
+                        //触发单元格工具事件
+                        table.on('tool(test)', function (obj) { // 双击 toolDouble
+                            var data = obj.data;
+                            //console.log(obj)
+                            if (obj.event === 'edit') {
+                                layer.open({
+                                    type: 2,
+                                    content: '/Form/UserDetail?id=' + data.id,
+                                    title: "修改用户",
+                                    area: ["800px", "600px"],
+                                    end: function () {
+                                        $("#searchUser").click();
+                                        /*Toast.fire({
+                                            icon: 'success',
+                                            title: '修改成功'
+                                        })*/
+                                    }
+                                });
+                            } else if (obj.event === 'del') {
+
+                                Swal.fire({
+                                    title: '真的要删除吗?',
+                                    text: '没有后悔药吃哦!',
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonColor: '#3085d6',
+                                    cancelButtonColor: '#d33',
+                                    confirmButtonText: '确认',
+                                    cancelButtonText: '取消',
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        $.ajax({
+                                            url: "/Form/DeleteUser?id=" + data.id,
+                                            success: function (res) {
+                                                if (res.code == 0) {
+                                                    /*Swal.fire(res.data,
+                                                        '用户信息已被删除',
+                                                        'success'
+                                                    );*/
+                                                    Toast.fire({
+                                                        icon: 'success',
+                                                        title: res.data
+                                                    })
+                                                    table.reload("test", {});
+                                                } else {
+                                                    /*Swal.fire(res.data,
+                                                        '',
+                                                        'error'
+                                                    )*/
+                                                    Toast.fire({
+                                                        icon: 'error',
+                                                        title: res.data
+                                                    })
+                                                }
+                                            }
+                                        });
+                                    }
+                                })
+                            }
+                        });
+
+                        // 行单击事件
+                        table.on('row(test)', function (obj) {
+                            //console.log(obj);
+                            //layer.closeAll('tips');
+                        });
+                        // 行双击事件
+                        table.on('rowDouble(test)', function (obj) {
+                            console.log(obj);
+                        });
+
+                        // 单元格编辑事件
+                        table.on('edit(test)', function (obj) {
+                            var field = obj.field //得到字段
+                                , value = obj.value //得到修改后的值
+                                , data = obj.data; //得到所在行所有键值
+
+                            var update = {};
+                            update[field] = value;
+                            obj.update(update);
+
+
+                        });
+
+                        $("#searchUser").on("click", function () {
+                            var key = $('#searchCondition').val();
+                            table.reload("test", {
+                                page: { curr: 1 },
+                                where: { keyWord: $('#searchCondition').val() }
+                            }, 'data');
+                        })
+
+                        $("#addUser").on("click", function () {
+                            layer.open({
+                                type: 2,
+                                content: '/Form/UserDetail?id=0',
+                                title: "添加用户",
+                                area: ["800px", "600px"],
+                                end: function () {
+                                    table.reload("test", {});
+                                    //$("#searchUser").click();
+                                    /*Toast.fire({
+                                        icon: 'success',
+                                        title: '添加成功'
+                                    })*/
+                                }
+                            });
+                        })
+
+                    });
+                </script>
+
+            </div>
+        </div>
+
+        <script>
+            //JS
+            layui.use(['element', 'layer', 'util'], function () {
+                var element = layui.element
+                    , layer = layui.layer
+                    , util = layui.util
+                    , $ = layui.$;
+
+                //头部事件
+                util.event('lay-header-event', {
+                    //左侧菜单事件
+                    menuLeft: function (othis) {
+                        layer.msg('展开左侧菜单的操作', { icon: 0 });
+                    }
+                    , menuRight: function () {
+                        layer.open({
+                            type: 1
+                            , content: '<div style="padding: 15px;">处理右侧面板的操作</div>'
+                            , area: ['260px', '100%']
+                            , offset: 'rt' //右上角
+                            , anim: 5
+                            , shadeClose: true
+                        });
+                    }
+                });
+
+            });
+        </script>
+    </div>
+</div>

@@ -1,0 +1,60 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title></title>
+</head>
+<body>
+    <div>
+        <div class="layui-form">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="80">
+                    <col width="80">
+                    <col width="80">
+                    <col width="80">
+                    <col width="150">
+                    <col width="350">
+                    <col>
+                </colgroup>
+                <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>年龄</th>
+                        <th>身高</th>
+                        <th>体重</th>
+                        <th>毕业学校</th>
+                        <th>个人简介</th>
+                        <th>头像</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (FromsSystem.Models.form form in Model)
+                    {
+                        <tr>
+                            <td>@form.name</td>
+                            <td>@form.age</td>
+                            <td>@form.height</td>
+                            <td>@form.weight</td>
+                            <td>@form.school</td>
+                            <td>@form.profile</td>
+                            <td><img src=@form.avatar /></td>
+                            <td>
+                                @Html.ActionLink("删除", "DeleteUser", new { id = form.id }, new { onclick = "return con()" })
+                                @Html.ActionLink("修改", "UpdateUser", new { id = form.id }, new { onclick = "return confirm('是否确认删除？')" })
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

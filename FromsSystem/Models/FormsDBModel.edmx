@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="FormsDBModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="form">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="name" Type="nchar" MaxLength="50" />
+          <Property Name="age" Type="int" />
+          <Property Name="height" Type="float" />
+          <Property Name="weight" Type="float" />
+          <Property Name="school" Type="nchar" MaxLength="50" />
+          <Property Name="profile" Type="ntext" />
+          <Property Name="avatar" Type="nchar" MaxLength="100" />
+          <Property Name="createTime" Type="datetime" />
+          <Property Name="updateTime" Type="datetime" />
+        </EntityType>
+        <Function Name="fuzzyQuery" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="key" Type="nvarchar" Mode="In" />
+        </Function>
+        <EntityContainer Name="FormsDBModelStoreContainer">
+          <EntitySet Name="form" EntityType="Self.form" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="FormsDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="form">
+          <Key>
+            <PropertyRef Name="id" />
+          </Key>
+          <Property Name="id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="name" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
+          <Property Name="age" Type="Int32" />
+          <Property Name="height" Type="Double" />
+          <Property Name="weight" Type="Double" />
+          <Property Name="school" Type="String" MaxLength="50" FixedLength="true" Unicode="true" />
+          <Property Name="profile" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="avatar" Type="String" MaxLength="100" FixedLength="true" Unicode="true" />
+          <Property Name="createTime" Type="DateTime" Precision="3" />
+          <Property Name="updateTime" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityContainer Name="FormsDBEntities1" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="form" EntityType="Self.form" />
+          <FunctionImport Name="fuzzyQuery" ReturnType="Collection(FormsDBModel.fuzzyQuery_Result)">
+            <Parameter Name="key" Mode="In" Type="String" />
+          </FunctionImport>
+        </EntityContainer>
+        <ComplexType Name="fuzzyQuery_Result">
+          <Property Type="Int32" Name="id" Nullable="false" />
+          <Property Type="String" Name="name" Nullable="true" MaxLength="50" />
+          <Property Type="Int32" Name="age" Nullable="true" />
+          <Property Type="Double" Name="height" Nullable="true" />
+          <Property Type="Double" Name="weight" Nullable="true" />
+          <Property Type="String" Name="school" Nullable="true" MaxLength="50" />
+          <Property Type="String" Name="profile" Nullable="true" MaxLength="Max" />
+          <Property Type="String" Name="avatar" Nullable="true" MaxLength="100" />
+          <Property Type="DateTime" Name="createTime" Nullable="true" Precision="23" />
+          <Property Type="DateTime" Name="updateTime" Nullable="true" Precision="23" />
+        </ComplexType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="FormsDBModelStoreContainer" CdmEntityContainer="FormsDBEntities1">
+          <EntitySetMapping Name="form">
+            <EntityTypeMapping TypeName="FormsDBModel.form">
+              <MappingFragment StoreEntitySet="form">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="age" ColumnName="age" />
+                <ScalarProperty Name="height" ColumnName="height" />
+                <ScalarProperty Name="weight" ColumnName="weight" />
+                <ScalarProperty Name="school" ColumnName="school" />
+                <ScalarProperty Name="profile" ColumnName="profile" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="createTime" ColumnName="createTime" />
+                <ScalarProperty Name="updateTime" ColumnName="updateTime" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="fuzzyQuery" FunctionName="FormsDBModel.Store.fuzzyQuery">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="FormsDBModel.fuzzyQuery_Result">
+                <ScalarProperty Name="id" ColumnName="id" />
+                <ScalarProperty Name="name" ColumnName="name" />
+                <ScalarProperty Name="age" ColumnName="age" />
+                <ScalarProperty Name="height" ColumnName="height" />
+                <ScalarProperty Name="weight" ColumnName="weight" />
+                <ScalarProperty Name="school" ColumnName="school" />
+                <ScalarProperty Name="profile" ColumnName="profile" />
+                <ScalarProperty Name="avatar" ColumnName="avatar" />
+                <ScalarProperty Name="createTime" ColumnName="createTime" />
+                <ScalarProperty Name="updateTime" ColumnName="updateTime" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="无" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
